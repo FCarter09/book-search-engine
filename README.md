@@ -20,14 +20,14 @@ npm install concurrently
 
 ### Client Directory
 
-npx create-react-app
-npm install jwt-decode
-npm install react-router-dom
-npm install @apollo/client graphql
+npx create-react-app,
+npm install jwt-decode,
+npm install react-router-dom,
+npm install @apollo/client graphql,
 
 
 ### Server Directory
 
-npm install apollo-server-express graphql
-npm install mongoose
+npm install apollo-server-express graphql,
+npm install mongoose,
 npm install jwtwebtoken
