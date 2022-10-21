@@ -15,6 +15,12 @@ const resolvers = {
           }
             throw new AuthenticationError('Not logged in');
           },
+         // get all users
+      users: async () => {
+        return User.find()
+        .select('-__v -password')
+        .populate('savedBooks')
+      },
        // get a user by username
        user: async (parent, { username }) => {
          return User.findOne({ username })
@@ -51,11 +57,11 @@ const resolvers = {
       
         },
         // add book to user
-        saveBook: async (parent, { userId, bookId }, context) => {
+        saveBook: async (parent, { userId, bookId, authors, title, description, image, link }, context) => {
           if (context.user) {
             const updatedUser = await User.findOneAndUpdate(
               { _id: userId },
-              { $push: { savedBooks: { bookId, username: context.user.username } } },
+              { $push: { savedBooks: { bookId, authors, title, description, image, link, username: context.user.username } } },
               { new: true, runValidators: true }
             );
         
