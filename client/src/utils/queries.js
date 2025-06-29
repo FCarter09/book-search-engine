@@ -34,24 +34,19 @@ export const QUERY_BOOKS = gql`
 `;
 
 export const GET_ME = gql`
-  {
+  query me{
     me {
-        query user($username: String!) {
-            user(username: $username) {
-                _id
-                username
-                email
-                bookCount
-                savedBooks {
-                    bookId
-                    authors
-                    description
-                    title
-                    image
-                    link
-                }
-            }
-          }
+         _id
+      username
+      email
+      savedBooks {
+        bookId
+        title
+        authors
+        description
+        image
+        link
+      }
     }
   }
 `;

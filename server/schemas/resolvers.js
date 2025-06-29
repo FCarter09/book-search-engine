@@ -1,6 +1,7 @@
 const { User, Book } = require('../models');
 const { AuthenticationError } = require('apollo-server-express');
 const { signToken } = require('../utils/auth');
+const fetch = require('node-fetch');
 
 
 const resolvers = {
@@ -15,20 +16,44 @@ const resolvers = {
           }
             throw new AuthenticationError('Not logged in');
           },
+
          // get all users
       users: async () => {
         return User.find()
         .select('-__v -password')
         .populate('savedBooks')
       },
+
        // get a user by username
        user: async (parent, { username }) => {
          return User.findOne({ username })
          .select('-__v -password')
          .populate('savedBooks')
        },
+
+       searchBooks: async (parent, { query }) => {
+            try {
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            if (!data.items) return [];
+
+            return data.items.map((item) => ({
+              bookId: item.id,
+              authors: item.volumeInfo.authors || [],
+              description: item.volumeInfo.description || '',
+              title: item.volumeInfo.title || 'No title',
+              image: item.volumeInfo.imageLinks?.thumbnail || '',
+              link: item.volumeInfo.infoLink || '',
+            }));
+          } catch (err) {
+            console.error('Google Books API error:', err);
+            throw new Error('Failed to fetch books from Google Books API');
+          }
+        }
        
     },
+    
     Mutation: {
         addUser: async (parent, args) => {
             const user = await User.create(args);
@@ -57,15 +82,16 @@ const resolvers = {
       
         },
         // add book to user
-        saveBook: async (parent, { saveBookId }, context) => {
+        saveBook: async (parent, { input }, context) => {
           if (context.user) {
             const updatedUser = await User.findOneAndUpdate(
               { _id: context.user._id },
-              { $addToSet: { savedBooks: saveBookId  } },
+              { $addToSet: { savedBooks: input  } }, // Add whole book object
               { new: true }
-            ).populate('savedBooks');
+            );
         
             return updatedUser;
+
           }
         
           throw new AuthenticationError('You need to be logged in!');
