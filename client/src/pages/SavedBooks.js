@@ -12,14 +12,19 @@ const SavedBooks = () => {
 
   const handleDeleteBook = async (bookId) => {
     try {
-      await deleteBook({
-        variables: { bookId },
-        update: (cache, { data: { removeBook } }) => {
-          cache.writeQuery({
-            query: GET_ME,
-            data: { me: removeBook },
-          });
-        }
+       await deleteBook({
+          variables: { bookId },
+          update: (cache, { data }) => {
+            if (!data?.removeBook) {
+              console.error("No data returned from removeBook");
+              return;
+            }
+
+            cache.writeQuery({
+              query: GET_ME,
+              data: { me: data.removeBook },
+            });
+          }
       });
 
       removeBookId(bookId);

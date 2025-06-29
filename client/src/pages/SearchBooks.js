@@ -61,11 +61,15 @@ const SearchBooks = () => {
     const handleSaveBook = async (bookId) => {
       const bookToSave = searchedBooks.find((book) => book.bookId === bookId)
 
+      if (!bookToSave.description) {
+        bookToSave.description = 'No description available.';
+      }
+
       const token = Auth.loggedIn() ? Auth.getToken() : null;
       if (!token) return false;
   
       try {
-        const { data } = await saveBook({
+         await saveBook({
           variables: {
             input: {
               bookId: bookToSave.bookId,

@@ -84,23 +84,30 @@ const resolvers = {
         // add book to user
         saveBook: async (parent, { input }, context) => {
           if (context.user) {
-            const updatedUser = await User.findOneAndUpdate(
-              { _id: context.user._id },
-              { $addToSet: { savedBooks: input  } }, // Add whole book object
-              { new: true }
-            );
+            const user = await User.findById(context.user._id);
+
+            // prevent duplicate books from being saved
+            const alreadySaved = user.savedBooks.some((book) => book.bookId === input.bookId);
+
+             
+             if (alreadySaved) {
+              throw new Error('This book is already saved.');
+            }
+
+            user.savedBooks.push(input);
+            await user.save();
         
-            return updatedUser;
+            return user;
 
           }
         
           throw new AuthenticationError('You need to be logged in!');
         },
         // delete book from user
-        removeBook: async (parent, { userId, bookId }, context) => {
+        removeBook: async (parent, { bookId }, context) => {
             if (context.user) {
             const updatedUser = await User.findOneAndUpdate(
-                { _id: userId },
+                { _id: context.user._id },
                 { $pull: { savedBooks: { bookId } } },
                 { new: true }
               );
@@ -108,9 +115,7 @@ const resolvers = {
             }
                 throw new AuthenticationError('You need to be logged in!');
 
-        }
-
-        
+        }   
          
     }
 
