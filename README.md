@@ -2,14 +2,13 @@
 
 ## Description
 
-Book-Search-Engine is an application powered by google's search engine that allows users to search for books. Users can search for books by entering 
+Book-Search-Engine is an application powered by a google book API that allows users to search for books. Users can search for books by entering 
 in key words. The return of data consists of book titles, authors, and descriptions of the book along with an image. Users are allowed to sign-up to create
-their own profiles and login after logging out. Users can also save selected books they like to their own profile but unfortunately this function of the website is unfinished 
-and still in progress.
+their own profiles and login after logging out. Users can also save selected books they'll like to save on their profiles as well as delete books when no longer wanted.
 
 ## Link
 
-https://google-search-books2022.herokuapp.com/
+https://book-search-engine2022-296917473e6e.herokuapp.com/
 
 ## Installation
 
